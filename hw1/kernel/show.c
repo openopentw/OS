@@ -3,6 +3,6 @@
 
 asmlinkage int sys_show(void)
 {
-	printk("b04902053 YJC");
+	printk("b04902053 YJC\n");
 	return 0;
 }
