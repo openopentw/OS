@@ -25,7 +25,7 @@
 #define arch_idle_time(cpu) 0
 #endif
 
-static int show_stat(struct seq_file *p, void *v)
+static int show_stat()
 {
 	int i, j;
 	unsigned long jif;
@@ -68,7 +68,7 @@ static int show_stat(struct seq_file *p, void *v)
 	}
 	sum += arch_irq_stat();
 
-	seq_printf(p, "cpu  %llu %llu %llu %llu %llu %llu %llu %llu %llu\n",
+	printk("cpu  %llu %llu %llu %llu %llu %llu %llu %llu %llu\n",
 		(unsigned long long)cputime64_to_clock_t(user),
 		(unsigned long long)cputime64_to_clock_t(nice),
 		(unsigned long long)cputime64_to_clock_t(system),
@@ -91,8 +91,7 @@ static int show_stat(struct seq_file *p, void *v)
 		softirq = kstat_cpu(i).cpustat.softirq;
 		steal = kstat_cpu(i).cpustat.steal;
 		guest = kstat_cpu(i).cpustat.guest;
-		seq_printf(p,
-			"cpu%d %llu %llu %llu %llu %llu %llu %llu %llu %llu\n",
+		printk(			"cpu%d %llu %llu %llu %llu %llu %llu %llu %llu %llu\n",
 			i,
 			(unsigned long long)cputime64_to_clock_t(user),
 			(unsigned long long)cputime64_to_clock_t(nice),
@@ -104,7 +103,7 @@ static int show_stat(struct seq_file *p, void *v)
 			(unsigned long long)cputime64_to_clock_t(steal),
 			(unsigned long long)cputime64_to_clock_t(guest));
 	}
-	seq_printf(p, "intr %llu", (unsigned long long)sum);
+	printk("intr %llu", (unsigned long long)sum);
 
 	/* sum again ? it could be updated? */
 	for_each_irq_nr(j) {
@@ -112,11 +111,10 @@ static int show_stat(struct seq_file *p, void *v)
 		for_each_possible_cpu(i)
 			per_irq_sum += kstat_irqs_cpu(j, i);
 
-		seq_printf(p, " %u", per_irq_sum);
+		printk(" %u", per_irq_sum);
 	}
 
-	seq_printf(p,
-		"\nctxt %llu\n"
+	printk(		"\nctxt %llu\n"
 		"btime %lu\n"
 		"processes %lu\n"
 		"procs_running %lu\n"
@@ -127,50 +125,16 @@ static int show_stat(struct seq_file *p, void *v)
 		nr_running(),
 		nr_iowait());
 
-	seq_printf(p, "softirq %llu", (unsigned long long)sum_softirq);
+	printk("softirq %llu", (unsigned long long)sum_softirq);
 
 	for (i = 0; i < NR_SOFTIRQS; i++)
-		seq_printf(p, " %u", per_softirq_sums[i]);
-	seq_printf(p, "\n");
+		printk(" %u", per_softirq_sums[i]);
+	printk("\n");
 
 	return 0;
 }
-
-static int stat_open(struct inode *inode, struct file *file)
-{
-	unsigned size = 4096 * (1 + num_possible_cpus() / 32);
-	char *buf;
-	struct seq_file *m;
-	int res;
-
-	/* don't ask for more than the kmalloc() max size, currently 128 KB */
-	if (size > 128 * 1024)
-		size = 128 * 1024;
-	buf = kmalloc(size, GFP_KERNEL);
-	if (!buf)
-		return -ENOMEM;
-
-	res = single_open(file, show_stat, NULL);
-	if (!res) {
-		m = file->private_data;
-		m->buf = buf;
-		m->size = size;
-	} else
-		kfree(buf);
-	return res;
-}
-
-static const struct file_operations proc_stat_operations = {
-	.open		= stat_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-
-// static int __init proc_stat_init(void)
 asmlinkage long sys_CPU_Utilization(void)
 {
-	proc_create("stat", 0, NULL, &proc_stat_operations);
+	show_stat();
 	return 0;
 }
-// module_init(proc_stat_init);
