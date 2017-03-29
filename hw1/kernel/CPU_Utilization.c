@@ -58,7 +58,7 @@ asmlinkage long sys_CPU_Utilization(void)
 
 	printk("TOTAL: %llu\n", total);
 	printk("IDLE: %llu\n", idle);
-	idle *= 100000
+	idle *= 100000;
 	mod = do_div(idle, total);
 	printk("IDLE: %llu\n", idle);
 
