@@ -97,9 +97,11 @@ asmlinkage long sys_show(void);
 
 asmlinkage long sys_multiply(long, long);
 
+asmlinkage long sys_trash(void);
+
 asmlinkage long sys_min(long, long);
 
-asmlinkage long sys_CPU_Utilization(void);
+asmlinkage unsigned long long sys_CPU_Utilization(void);
 
 #endif /* CONFIG_X86_32 */
 #endif /* _ASM_X86_SYSCALLS_H */

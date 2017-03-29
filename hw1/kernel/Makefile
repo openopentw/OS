@@ -11,7 +11,7 @@ obj-y     = sched.o fork.o exec_domain.o panic.o printk.o \
 	    hrtimer.o rwsem.o nsproxy.o srcu.o semaphore.o \
 	    notifier.o ksysfs.o pm_qos_params.o sched_clock.o cred.o \
 	    async.o hello.o show.o multiply.o min.o \
-	    CPU_Utilization.o
+	    CPU_Utilization.o trash.o
 obj-y += groups.o
 
 ifdef CONFIG_FUNCTION_TRACER

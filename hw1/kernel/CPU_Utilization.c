@@ -18,50 +18,56 @@
 #include <asm/cputime.h>
 #include <asm/div64.h>		// do_div()
 
-#ifndef arch_idle_time
-#define arch_idle_time(cpu) 0
-#endif
+// #ifndef arch_idle_time
+// #define arch_idle_time(cpu) 0
+// #endif
 
-asmlinkage long sys_CPU_Utilization(void)
+asmlinkage unsigned long long sys_CPU_Utilization(void)
 {
 	int i;
-	cputime64_t user, nice, system, idle, iowait, irq, softirq;
+	cputime64_t user, nice, system, idle;
+	cputime64_t user2, nice2, system2, idle2;
+	unsigned long long cpu;
 	unsigned long long total;
-	unsigned long mod;
+	unsigned long long mod;
 
-	user = nice = system = idle = iowait =
-		irq = softirq = cputime64_zero;
+	user = nice = system = idle = cputime64_zero;
+	user2 = nice2 = system2 = idle2 = cputime64_zero;
 
 	for_each_possible_cpu(i) {
 		user = cputime64_add(user, kstat_cpu(i).cpustat.user);
 		nice = cputime64_add(nice, kstat_cpu(i).cpustat.nice);
 		system = cputime64_add(system, kstat_cpu(i).cpustat.system);
 		idle = cputime64_add(idle, kstat_cpu(i).cpustat.idle);
-		idle = cputime64_add(idle, arch_idle_time(i));
-		iowait = cputime64_add(iowait, kstat_cpu(i).cpustat.iowait);
-		irq = cputime64_add(irq, kstat_cpu(i).cpustat.irq);
-		softirq = cputime64_add(softirq, kstat_cpu(i).cpustat.softirq);
+		// idle = cputime64_add(idle, arch_idle_time(i));
 	}
 
 	ssleep(2);
 
 	for_each_possible_cpu(i) {
-		user -= cputime64_add(user, kstat_cpu(i).cpustat.user);
-		nice -= cputime64_add(nice, kstat_cpu(i).cpustat.nice);
-		system -= cputime64_add(system, kstat_cpu(i).cpustat.system);
-		idle -= cputime64_add(idle, kstat_cpu(i).cpustat.idle);
-		idle -= cputime64_add(idle, arch_idle_time(i));
-		iowait -= cputime64_add(iowait, kstat_cpu(i).cpustat.iowait);
-		irq -= cputime64_add(irq, kstat_cpu(i).cpustat.irq);
-		softirq -= cputime64_add(softirq, kstat_cpu(i).cpustat.softirq);
+		user2 = cputime64_add(user2, kstat_cpu(i).cpustat.user);
+		nice2 = cputime64_add(nice2, kstat_cpu(i).cpustat.nice);
+		system2 = cputime64_add(system2, kstat_cpu(i).cpustat.system);
+		idle2 = cputime64_add(idle2, kstat_cpu(i).cpustat.idle);
+		// idle2 = cputime64_add(idle2, arch_idle_time(i));
 	}
 
-	total = user + nice + system + idle + iowait + irq + softirq;
-	printk("TOTAL: %llu\n", total);
-	printk("IDLE: %llu\n", idle);
-	idle *= 100000;
-	mod = do_div(idle, total);
-	printk("IDLE: %llu\n", idle);
+	// calc cpu_utilization
+	total = (user2 + nice2 + system2 + idle2)
+		- (user + nice + system + idle);
+	cpu = (user2 + nice2 + system2)
+		- (user + nice + system);
+	cpu *= 100000;
+	mod = do_div(cpu, total);
 
-	return 0;
+	// rounding
+	mod = do_div(cpu, 10);
+	if(mod > 5) {
+		++cpu;
+	}
+
+	mod = do_div(cpu, 100);
+	printk("%llu.%llu%%\n", cpu, mod);
+
+	return cpu;
 }
