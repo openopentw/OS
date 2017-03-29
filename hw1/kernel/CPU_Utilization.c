@@ -26,7 +26,7 @@ asmlinkage long sys_CPU_Utilization(void)
 {
 	int i;
 	cputime64_t user, nice, system, idle, iowait, irq, softirq;
-	unsigned long long total = user + nice + system + idle + iowait + irq + softirq;
+	unsigned long long total;
 	unsigned long mod;
 
 	user = nice = system = idle = iowait =
@@ -56,6 +56,7 @@ asmlinkage long sys_CPU_Utilization(void)
 		softirq -= cputime64_add(softirq, kstat_cpu(i).cpustat.softirq);
 	}
 
+	total = user + nice + system + idle + iowait + irq + softirq;
 	printk("TOTAL: %llu\n", total);
 	printk("IDLE: %llu\n", idle);
 	idle *= 100000;
