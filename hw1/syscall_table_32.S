@@ -336,9 +336,8 @@ ENTRY(sys_call_table)
 	.long sys_pwritev
 	.long sys_rt_tgsigqueueinfo	/* 335 */
 	.long sys_perf_event_open
-	.long sys_hello
 	.long sys_show
 	.long sys_multiply
-	.long sys_trash			/* 340!? */
 	.long sys_min
+	.long sys_trash			/* 340!? */
 	.long sys_CPU_Utilization

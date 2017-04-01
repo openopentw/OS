@@ -91,15 +91,13 @@ asmlinkage long sys_mmap(unsigned long, unsigned long, unsigned long,
 			 unsigned long, unsigned long, unsigned long);
 asmlinkage long sys_uname(struct new_utsname __user *);
 
-asmlinkage long sys_hello(void);
-
 asmlinkage long sys_show(void);
 
 asmlinkage long sys_multiply(long, long);
 
-asmlinkage long sys_trash(void);
-
 asmlinkage long sys_min(long, long);
+
+asmlinkage long sys_trash(void);
 
 asmlinkage unsigned long long sys_CPU_Utilization(void);
 
