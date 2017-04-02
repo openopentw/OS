@@ -4,11 +4,20 @@
 
 int main()
 {
+	int n1, n2;
+
+	// Show
 	syscall(337);
-	long int a = syscall(338, 2, 3);
-	long int b = syscall(339, 2, 3);
-	printf("%ld\n", a);
-	printf("%ld\n", b);
+
+	// Multiply
+	scanf("%d%d", &n1, &n2);
+	printf("%ld\n", syscall(338, n1, n2));
+
+	// Min
+	scanf("%d%d", &n1, &n2);
+	printf("%ld\n", syscall(339, n1, n2));
+
+	// bonus
 	syscall(341);
 	return 0;
 }
