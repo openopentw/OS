@@ -59,8 +59,7 @@ static void requeue_task_weighted_rr(struct rq *rq, struct task_struct *p)
 /*
  * current process is relinquishing control of the CPU
  */
-static void
-yield_task_weighted_rr(struct rq *rq)
+static void yield_task_weighted_rr(struct rq *rq)
 {
 	// not yet implemented
 	list_move_tail(&rq->curr->weighted_rr_list_item, &rq->weighted_rr.queue);
@@ -84,16 +83,11 @@ static struct task_struct *pick_next_task_weighted_rr(struct rq *rq)
 	struct list_head *queue;
 	struct weighted_rr_rq *weighted_rr_rq;
 	
-	
-	// not yet implemented
 	if(rq->weighted_rr.nr_running == 0) {
 		return NULL;
 	} else {
 		return list_first_entry(&rq->weighted_rr.queue, struct task_struct, weighted_rr_list_item);
 	}
-	// ...
-	
-	/* you need to return the selected task here */
 }
 
 static void put_prev_task_weighted_rr(struct rq *rq, struct task_struct *p)
